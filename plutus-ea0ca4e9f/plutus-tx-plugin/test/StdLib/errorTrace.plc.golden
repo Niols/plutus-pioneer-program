@@ -1,0 +1,32 @@
+(program
+  (let
+    (nonrec)
+    (datatypebind
+      (datatype (tyvardecl Unit (type))  Unit_match (vardecl Unit Unit))
+    )
+    (termbind
+      (strict)
+      (vardecl error (all a (type) (fun Unit a)))
+      (abs e (type) (lam thunk Unit (error e)))
+    )
+    (termbind
+      (strict)
+      (vardecl trace (fun (con string) Unit))
+      (lam
+        arg
+        (con string)
+        (let
+          (nonrec)
+          (termbind (strict) (vardecl b (con unit)) [ (builtin trace) arg ])
+          Unit
+        )
+      )
+    )
+    (termbind
+      (strict)
+      (vardecl traceError (all a (type) (fun (con string) a)))
+      (abs a (type) (lam str (con string) [ { error a } [ trace str ] ]))
+    )
+    [ { traceError (con integer) } (con string "") ]
+  )
+)

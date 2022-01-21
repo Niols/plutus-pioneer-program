@@ -1,10 +1,11 @@
 # Plutus Pioneer Program
 
 *This clone of the official repository updates it to only contain the second
-iteration. It also includes the right version of Plutus Apps to start a working
-Nix Shell on NixOS as of January 21st, 2022. To start the Nix Shell in question,
-simply start it from the `plutus-ap_*` directory at the root of this
-repository.*
+iteration. It also includes the right version of Plutus to use the playground,
+as well as the right version of Plutus Apps to start a working `nix-shell` (the
+instructions in the lecture do not work on NixOS as of January 2022). Finally,
+this repository include two helper scripts, `./start-playground` and
+`./enter-nix-shell` doing exactly what their names suggest.*
 
 ## Lectures
 

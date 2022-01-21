@@ -1,0 +1,6 @@
+#!/bin/sh
+set -euC
+
+cd "$(dirname "$0")"
+cd plutus-apps-dcde5bd
+nix-shell --command 'cd ..; return'
