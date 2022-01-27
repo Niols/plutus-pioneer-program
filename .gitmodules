@@ -1,0 +1,3 @@
+[submodule "assets/plutus"]
+	path = assets/plutus
+	url = git@github.com:input-output-hk/plutus.git

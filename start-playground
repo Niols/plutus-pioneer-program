@@ -1,22 +1,42 @@
 #!/bin/sh
 set -euC
 
-if [ "$#" -eq 0 ]; then
-    (
-        printf 'This will start the plutus-playground-server in the appropriate nix-shell.\n'
-        printf 'Wait for the server to say “Interpreter ready”, then open a new terminal\n'
-        printf 'and proceed with: %s --client\n\n' "$0"
-        cd plutus-ea0ca4e9f
-        nix-shell --run 'cd plutus-playground-client && plutus-playground-server'
-    )
-elif [ "$#" -eq 1 ] && [ "$1" = '--client' ]; then
-    (
-        cd plutus-ea0ca4e9f
-        nix-shell --run 'cd plutus-playground-client && npm start'
-    )
-else
-    printf 'I do not know what to do with the given arguments.\n'
-    printf 'Usage: %s (no arguments)\n' "$0"
-    printf '       %s --client\n' "$0"
-    exit 7
-fi
+cd "$(dirname "$0")"
+
+printf 'Which week would you like to work on? [1-10] '
+read week
+printf 'Alright, let us go for week %d!\n' "$week"
+
+cabal_project=$(printf 'code/week%02d/cabal.project' "$week")
+
+## In the cabal.project file, keep only the 'location:' and 'tag:' lines. In
+## this filtered version, look for the location containing 'plutus.git' and
+## consider the line right after that. This should be the right tag.
+tag=$(
+    cat "$cabal_project" \
+        | grep -e location: -e tag: \
+        | grep plutus.git -A 1 \
+        | grep tag: \
+        | cut -d ' ' -f 4
+   )
+
+printf 'The tag for Plutus is: %s\n' "$tag"
+
+plutus=tmp/plutus-$RANDOM
+printf 'Copying Plutus in `%s`...\n' "$plutus"
+mkdir -p "$(dirname "$plutus")"
+cp -R assets/plutus "$plutus"
+
+printf 'Checking out tag `%s`...\n' "$tag"
+(cd "$plutus" && git checkout "$tag")
+
+printf 'Building Nix for this version of Plutus...\n'
+(cd "$plutus" && nix-shell --run exit)
+
+printf 'Starting Plutus Playground Server & Client...\n'
+xfce4-terminal --command "sh -c \"
+xfce4-terminal --tab --title 'Plutus Playground Server' --command \\\"sh -c \\\\\\\"cd $plutus && nix-shell --run 'cd plutus-playground-client && plutus-playground-server'\\\\\\\"\\\";
+xfce4-terminal --tab --title 'Plutus Playground Client' --command \\\"sh -c \\\\\\\"cd $plutus && nix-shell --run 'cd plutus-playground-client && npm start'\\\\\\\"\\\";
+\""
+
+printf 'My job here is done!\n'
