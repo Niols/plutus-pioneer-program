@@ -2,5 +2,5 @@
 set -euC
 
 cd "$(dirname "$0")"
-cd plutus-apps-dcde5bd
-nix-shell --command 'cd ..; return'
+cd assets/plutus-apps-dcde5bd
+nix-shell --command 'cd ../..; return'
